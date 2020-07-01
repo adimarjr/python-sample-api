@@ -1,8 +1,7 @@
 from django.db import models
 
 class ItemQuerySet(models.QuerySet):
-    def t(self):
-        return ""
+    pass
 
 class ItemManager(models.Manager):
     def get_querySet(self):

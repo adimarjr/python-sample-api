@@ -36,6 +36,7 @@ urlpatterns = [
     path('', home_page),
     path('item-new/', item_create_view),
     path('item/', include('item.urls')),
+    path('api/item/', include('item.api.urls')),
     path('admin/', admin.site.urls),
 ]
 
