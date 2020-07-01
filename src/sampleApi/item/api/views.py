@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -14,7 +14,7 @@ class ItemListAPIView(APIView):
         serializer = ItemSerializer(qs, many=True)
         return Response(serializer.data)
 
-class ItemAPIView(generics.ListAPIView):
+class ItemAPIView(mixins.CreateModelMixin, generics.ListAPIView):
     permission_classes = []
     authentication_classes = []
     serializer_class = ItemSerializer
@@ -25,30 +25,22 @@ class ItemAPIView(generics.ListAPIView):
         if query is not None:
             qs = qs.filter(name__icontains=query)
         return qs
+    
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
-class ItemCreateAPIView(generics.CreateAPIView):
-    permission_classes = []
-    authentication_classes = []
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-
-class ItemDetailAPIView(generics.RetrieveAPIView):
-    permission_classes = []
-    authentication_classes = []
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-    lookup_field = 'id'
-
-class ItemUpdateAPIView(generics.UpdateAPIView):
+class ItemDetailAPIView(
+    mixins.UpdateModelMixin, 
+    mixins.DestroyModelMixin, 
+    generics.RetrieveAPIView):
     permission_classes = []
     authentication_classes = []
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
     lookup_field = 'id'
 
-class ItemDeleteAPIView(generics.DestroyAPIView):
-    permission_classes = []
-    authentication_classes = []
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-    lookup_field = 'id'
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
